@@ -1,0 +1,31 @@
+---
+description: Bezpečnostné pravidlá pre protokoly projekt
+alwaysApply: true
+---
+
+# Protokoly ElevateCars — Bezpečnostné pravidlá
+
+## KRITICKÉ: Tento projekt NESMIE meniť databázovú schému
+
+Tento projekt zdieľa Supabase databázu s hlavným projektom elevatecars.sk.
+
+### ZAKÁZANÉ operácie
+- NESPÚŠŤAJ žiadne SQL migrácie
+- NEVYTVÁRAJ tabuľky, stĺpce ani indexy
+- NEMEŇ RLS politiky
+- NEPOUŽÍVAJ `supabase db push`, `supabase db reset`, ani `supabase migration`
+- NEINŠTALUJ `supabase` CLI v tomto projekte
+
+### Povolené operácie
+- Čítanie dát cez Supabase JS client (select)
+- Zapisovanie dát cez Supabase JS client (insert, update)
+- Upload súborov do Supabase Storage
+- Generovanie typov cez `supabase gen types` (read-only)
+
+### Ak treba zmeniť schému
+Povedz používateľovi, aby zmenu schémy spravil v hlavnom projekte
+(elevatecars) kde sú migrácie.
+
+### Databázy
+- DEV: vvmqdolrhesuxkcwunka (používaj túto)
+- PROD: mdvkwuoblnmlyxudrnwa (NIKDY bez povolenia)

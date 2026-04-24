@@ -1,0 +1,27 @@
+---
+description: Use pnpm exclusively as the package manager
+alwaysApply: true
+---
+
+# Package Manager: pnpm only
+
+Always use `pnpm` — never `npm` or `yarn`.
+
+```bash
+# ✅ CORRECT
+pnpm install
+pnpm add <package>
+pnpm remove <package>
+pnpm run <script>
+pnpm dlx <package>
+
+# ❌ WRONG
+npm install
+npm run dev
+yarn add
+npx
+```
+
+- Use `pnpm dlx` instead of `npx`
+- Use `pnpm add` instead of `npm install <package>`
+- Use `pnpm run` instead of `npm run`

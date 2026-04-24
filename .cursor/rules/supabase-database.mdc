@@ -1,0 +1,66 @@
+---
+description: Pravidlá pre prácu so Supabase databázou
+alwaysApply: true
+---
+
+# Supabase Database Rules
+
+## KRITICKÉ: Používaj VŽDY DEV databázu
+
+**NIKDY nepracuj s produkčnou databázou bez explicitného povolenia od používateľa!**
+
+### Databázy projektu
+
+| Prostredie | Project ID | Názov | Použitie |
+|------------|------------|-------|----------|
+| **DEV** | `vvmqdolrhesuxkcwunka` | elevatecars-dev | ✅ VŽDY používaj túto |
+| **PROD** | `mdvkwuoblnmlyxudrnwa` | elevatecars-production | ⛔ NIKDY bez povolenia |
+
+### Pred akoukoľvek databázovou operáciou
+
+1. **Skontroluj aktuálne prepojenie:**
+   ```bash
+   npx supabase projects list
+   ```
+   alebo pozri súbor `supabase/.temp/project-ref`
+
+2. **Ak nie si na DEV, prepni sa:**
+   ```bash
+   npx supabase link --project-ref vvmqdolrhesuxkcwunka
+   ```
+
+3. **Potvrď prepojenie pred push/pull operáciami:**
+   ```bash
+   npx supabase migration list
+   ```
+   - Skontroluj, že výstup ukazuje správnu databázu
+
+### Zakázané operácie bez explicitného povolenia
+
+- `npx supabase db push` na PROD
+- `npx supabase db reset` na PROD
+- `npx supabase migration repair` na PROD
+- Akékoľvek deštruktívne operácie
+
+### Ak používateľ žiada prácu s PROD
+
+1. **Vždy sa opýtaj na potvrdenie:**
+   "Chceš naozaj pracovať s PRODUKČNOU databázou (mdvkwuoblnmlyxudrnwa)? Toto môže ovplyvniť živé dáta."
+
+2. **Po dokončení sa prepni späť na DEV:**
+   ```bash
+   npx supabase link --project-ref vvmqdolrhesuxkcwunka
+   ```
+
+### Environment variables
+
+DEV databáza používa tieto premenné (v `.env.local`):
+```
+NEXT_PUBLIC_SUPABASE_URL=https://vvmqdolrhesuxkcwunka.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
+
+PROD databáza (len pre referenciu, NEPOUŽÍVAJ):
+```
+# PROD: https://mdvkwuoblnmlyxudrnwa.supabase.co
+```
