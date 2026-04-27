@@ -1,0 +1,27 @@
+import { redirect } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/server";
+
+export async function requireAdmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    redirect(process.env.NEXT_PUBLIC_MAIN_SITE_URL || "https://elevatecars.sk");
+  }
+
+  return { user, supabase };
+}

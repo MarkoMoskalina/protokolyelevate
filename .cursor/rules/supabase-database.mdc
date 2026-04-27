@@ -1,22 +1,102 @@
 ---
-description: Pravidlá pre prácu so Supabase databázou
+description: Pravidlá pre prácu so zdieľanou Supabase databázou
 alwaysApply: true
 ---
 
-# Supabase Database Rules
+# Supabase Database Rules — Protokoly projekt
 
-## KRITICKÉ: Používaj VŽDY DEV databázu
+## KRITICKÉ: Tento projekt ZDIEĽA databázu s hlavným webom elevatecars.sk
 
-**NIKDY nepracuj s produkčnou databázou bez explicitného povolenia od používateľa!**
+Tento projekt (protokoly.elevatecars.sk) používa rovnakú Supabase inštanciu ako hlavný web.
+Akákoľvek chyba v migrácii môže rozbiť produkčný web autopožičovne.
 
-### Databázy projektu
+## Databázy projektu
 
 | Prostredie | Project ID | Názov | Použitie |
-|------------|------------|-------|----------|
-| **DEV** | `vvmqdolrhesuxkcwunka` | elevatecars-dev | ✅ VŽDY používaj túto |
-| **PROD** | `mdvkwuoblnmlyxudrnwa` | elevatecars-production | ⛔ NIKDY bez povolenia |
+|---|---|---|---|
+| **DEV** | `vvmqdolrhesuxkcwunka` | elevatecars-dev | VŽDY používaj túto |
+| **PROD** | `mdvkwuoblnmlyxudrnwa` | elevatecars-production | NIKDY bez povolenia |
 
-### Pred akoukoľvek databázovou operáciou
+## CHRÁNENÉ TABUĽKY — NESMIEŠ ICH MENIŤ
+
+Nasledujúce tabuľky patria hlavnému projektu. NESMIEŠ na nich robiť ALTER, DROP, TRUNCATE,
+meniť ich RLS politiky, triggery ani indexy:
+
+- `additional_services`
+- `admin_notifications`
+- `blog_categories`
+- `blog_posts`
+- `brands`
+- `calendar_blocks`
+- `car_equipment`
+- `car_excluded_insurance_tiers`
+- `car_pickup_locations`
+- `car_services`
+- `cars`
+- `customers`
+- `delivery_discount_tiers`
+- `delivery_origin_addresses`
+- `delivery_settings`
+- `deposit_modes`
+- `equipment`
+- `insurance_tiers`
+- `pickup_locations`
+- `pricing_tiers`
+- `profiles`
+- `promo_code_cars`
+- `promo_codes`
+- `reservation_amendments`
+- `reservation_services`
+- `reservations`
+- `settings`
+- `testimonials`
+
+### Z týchto tabuliek SMIEŠ iba:
+
+- `SELECT` (čítanie dát) cez Supabase JS client
+- Nikdy INSERT, UPDATE, DELETE na tabuľky hlavného projektu (okrem `handover_protocols` a tabuliek ktoré si sám vytvoríš)
+
+### Výnimky — tabuľky z hlavného projektu kde SMIEŠ čítať:
+
+- `reservations` — SELECT na zobrazenie zoznamu rezervácií a predvyplnenie protokolu
+- `cars` — SELECT na názov auta, ŠPZ, extra_km_price
+- `customers` — SELECT na údaje zákazníka
+- `profiles` — SELECT na overenie is_admin
+- `pickup_locations` — SELECT na miesta odovzdania
+- `settings` — SELECT na firemné údaje pre PDF
+
+## POVOLENÉ TABUĽKY — tieto SMIEŠ vytvárať a meniť
+
+- `handover_protocols` — hlavná tabuľka tohto projektu
+- Akékoľvek nové tabuľky s prefixom `protocol_` (napr. `protocol_templates`)
+
+## SUPABASE STORAGE
+
+### Existujúce buckety — NESMIEŠ meniť:
+- `car-images`
+- `customer-documents`
+- `contracts`
+- `blog-images`
+- `website-assets`
+
+### Nové buckety — SMIEŠ vytvárať:
+- `protocol-documents` — PDF protokolov
+- `protocol-photos` — Fotky z protokolov
+- Akékoľvek nové buckety s prefixom `protocol-`
+
+## EXISTUJÚCE FUNKCIE — NESMIEŠ meniť
+
+- `check_car_availability`
+- `check_car_availability_any_slot`
+- `create_customer`
+- `get_cars_with_recommendation_score`
+- `get_promo_code_reservations`
+- `update_customer_details`
+- `upsert_checkout_customer`
+- `validate_promo_code`
+- `generate_reservation_number`
+
+## Pred akoukoľvek databázovou operáciou
 
 1. **Skontroluj aktuálne prepojenie:**
    ```bash
@@ -33,34 +113,30 @@ alwaysApply: true
    ```bash
    npx supabase migration list
    ```
-   - Skontroluj, že výstup ukazuje správnu databázu
 
-### Zakázané operácie bez explicitného povolenia
+## Zakázané operácie BEZ VÝNIMKY
 
-- `npx supabase db push` na PROD
-- `npx supabase db reset` na PROD
-- `npx supabase migration repair` na PROD
-- Akékoľvek deštruktívne operácie
+- `supabase db reset` — NIKDY, zmaže celú databázu vrátane dát hlavného webu
+- `supabase migration repair` na PROD
+- `DROP TABLE` na akúkoľvek chránenú tabuľku
+- `ALTER TABLE` na akúkoľvek chránenú tabuľku
+- `TRUNCATE` na akúkoľvek tabuľku
+- Akýkoľvek `push` na PROD bez explicitného povolenia
 
-### Ak používateľ žiada prácu s PROD
+## Zakázané operácie BEZ POTVRDENIA od používateľa
 
-1. **Vždy sa opýtaj na potvrdenie:**
-   "Chceš naozaj pracovať s PRODUKČNOU databázou (mdvkwuoblnmlyxudrnwa)? Toto môže ovplyvniť živé dáta."
+- `supabase db push` — pred každým pushom UKÁŽ migračný SQL používateľovi a počkaj na potvrdenie
 
-2. **Po dokončení sa prepni späť na DEV:**
-   ```bash
-   npx supabase link --project-ref vvmqdolrhesuxkcwunka
-   ```
+## Environment variables
 
-### Environment variables
-
-DEV databáza používa tieto premenné (v `.env.local`):
+DEV databáza:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://vvmqdolrhesuxkcwunka.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
 ```
 
-PROD databáza (len pre referenciu, NEPOUŽÍVAJ):
+PROD databáza (NEPOUŽÍVAJ):
 ```
 # PROD: https://mdvkwuoblnmlyxudrnwa.supabase.co
 ```
