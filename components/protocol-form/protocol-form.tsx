@@ -203,10 +203,45 @@ export function ProtocolForm({ initialData }: ProtocolFormProps) {
       if (asDraft) {
         toast.success("Predpripravený protokol bol uložený");
         router.push("/novy");
-      } else {
-        toast.success("Protokol bol vytvorený");
-        router.push(`/protokol/${id}`);
+        return;
       }
+
+      // Generate PDF + send email, then redirect.
+      const toastId = toast.loading("Generujem PDF a posielam email...");
+
+      try {
+        console.log("[protocol-form] starting PDF generation for", id);
+        const pdfRes = await fetch(`/api/protocols/${id}/pdf`, {
+          method: "POST",
+        });
+        console.log("[protocol-form] PDF response status:", pdfRes.status);
+        if (!pdfRes.ok) {
+          const data = await pdfRes.json().catch(() => ({}));
+          throw new Error(data.error || "Generovanie PDF zlyhalo");
+        }
+
+        console.log("[protocol-form] starting email send for", id);
+        const emailRes = await fetch(`/api/protocols/${id}/email`, {
+          method: "POST",
+        });
+        console.log("[protocol-form] email response status:", emailRes.status);
+        if (!emailRes.ok) {
+          const data = await emailRes.json().catch(() => ({}));
+          throw new Error(data.error || "Odoslanie emailu zlyhalo");
+        }
+
+        toast.success("Protokol bol vytvorený a odoslaný zákazníkovi", {
+          id: toastId,
+        });
+      } catch (pdfEmailErr) {
+        console.error("[protocol-form] PDF/email error:", pdfEmailErr);
+        toast.error(
+          `Protokol uložený, ale: ${pdfEmailErr instanceof Error ? pdfEmailErr.message : String(pdfEmailErr)}`,
+          { id: toastId },
+        );
+      }
+
+      router.push("/");
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Nepodarilo sa uložiť protokol",
