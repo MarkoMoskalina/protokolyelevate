@@ -87,10 +87,14 @@ export async function fetchDashboardProtocols(
     returnProtocols.map((r) => [r.handover_protocol_id, r]),
   );
 
-  const protocolsWithReturn = handoversWithThumbs.map((h) => ({
-    protocol: h,
-    hasReturn: returnByHandoverId.has(h.id),
-  }));
+  const protocolsWithReturn = handoversWithThumbs.map((h) => {
+    const ret = returnByHandoverId.get(h.id) ?? null;
+    return {
+      protocol: h,
+      hasReturn: !!ret,
+      returnProtocolId: ret?.id ?? null,
+    };
+  });
 
   if (tab === "active") {
     return protocolsWithReturn.filter((p) => !p.hasReturn);

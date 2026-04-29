@@ -41,7 +41,6 @@ export interface DamageItem {
 export interface ProtocolPdfData {
   protocol: Protocol;
   company: CompanyInfo;
-  appUrl: string;
   signatureLandlordDataUrl?: string | null;
   signatureTenantDataUrl?: string | null;
 }
@@ -272,7 +271,6 @@ function Field({ label, value }: { label: string; value: string | null | undefin
 export function ProtocolPdf({
   protocol,
   company,
-  appUrl,
   signatureLandlordDataUrl,
   signatureTenantDataUrl,
 }: ProtocolPdfData) {
@@ -486,11 +484,22 @@ export function ProtocolPdf({
         <View style={styles.accessBox} wrap={false}>
           <Text style={styles.accessTitle}>Fotodokumentácia online</Text>
           <Text style={styles.accessText}>
-            Pre zobrazenie kompletnej fotodokumentácie navštívte:
+            Pre zobrazenie kompletnej fotodokumentácie otvorte odkaz z emailu,
+            ktorý bol odoslaný na {protocol.customer_email}, a po zobrazení
+            stránky zadajte 6-ciferný kód:
           </Text>
-          <Text style={styles.accessText}>{appUrl}/zobrazenie</Text>
-          <Text style={styles.accessText}>a zadajte kód:</Text>
           <Text style={styles.accessCode}>{protocol.access_code}</Text>
+          {protocol.access_expires_at ? (
+            <Text style={styles.accessText}>
+              Platnosť odkazu:{" "}
+              {new Date(protocol.access_expires_at).toLocaleDateString("sk-SK", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}{" "}
+              (90 dní od vytvorenia protokolu)
+            </Text>
+          ) : null}
         </View>
 
         {/* Footer */}

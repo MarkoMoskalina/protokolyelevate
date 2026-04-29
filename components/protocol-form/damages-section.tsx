@@ -10,9 +10,15 @@ import { uuid } from "@/lib/uuid";
 interface DamagesSectionProps {
   damages: DamageEntry[];
   onChange: (damages: DamageEntry[]) => void;
+  /** Section label, defaults to "Poškodenia" */
+  title?: string;
 }
 
-export function DamagesSection({ damages, onChange }: DamagesSectionProps) {
+export function DamagesSection({
+  damages,
+  onChange,
+  title = "Poškodenia",
+}: DamagesSectionProps) {
   function addDamage() {
     onChange([
       ...damages,
@@ -31,7 +37,7 @@ export function DamagesSection({ damages, onChange }: DamagesSectionProps) {
   return (
     <div>
       <label className="mb-1.5 block text-sm font-medium text-secondary">
-        Poškodenia
+        {title}
       </label>
 
       {damages.length > 0 && (

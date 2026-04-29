@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, MapPin, Undo2, Gauge } from "lucide-react";
+import { ArrowRight, MapPin, Undo2, Gauge, Undo } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import type { Protocol } from "@/lib/protocols";
@@ -11,6 +11,8 @@ import { getProtocolStatusLabel, getProtocolStatusVariant } from "@/lib/protocol
 interface ProtocolCardProps {
   protocol: Protocol;
   hasReturn: boolean;
+  /** When `hasReturn` is true, the id of the return protocol (so we can link to it) */
+  returnProtocolId?: string | null;
 }
 
 const statusStyles = {
@@ -32,7 +34,11 @@ function getDayCount(pickup: string | null, dropoff: string | null): number | nu
   return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)));
 }
 
-export function ProtocolCard({ protocol, hasReturn }: ProtocolCardProps) {
+export function ProtocolCard({
+  protocol,
+  hasReturn,
+  returnProtocolId,
+}: ProtocolCardProps) {
   const statusLabel = getProtocolStatusLabel(protocol, hasReturn);
   const statusVariant = getProtocolStatusVariant(protocol, hasReturn);
   const isHandover = protocol.type === "handover";
@@ -129,22 +135,43 @@ export function ProtocolCard({ protocol, hasReturn }: ProtocolCardProps) {
 
         {/* Actions */}
         <div className="mt-3 flex items-center gap-2">
-          <Link
-            href={`/protokol/${protocol.id}`}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-secondary px-3 py-2 text-sm font-medium text-secondary transition-colors hover:bg-secondary_hover hover:text-primary"
-          >
-            Detail
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          {isHandover && hasReturn && returnProtocolId ? (
+            <>
+              <Link
+                href={`/protokol/${protocol.id}`}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-secondary px-3 py-2 text-sm font-medium text-secondary transition-colors hover:bg-secondary_hover hover:text-primary"
+              >
+                <Undo className="h-3.5 w-3.5" />
+                Odovzdávací
+              </Link>
+              <Link
+                href={`/protokol/${returnProtocolId}`}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300"
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+                Preberací
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href={`/protokol/${protocol.id}`}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-secondary px-3 py-2 text-sm font-medium text-secondary transition-colors hover:bg-secondary_hover hover:text-primary"
+              >
+                Detail
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
 
-          {isHandover && !hasReturn && (
-            <Link
-              href={`/protokol/${protocol.id}/vratenie`}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-solid px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-solid_hover"
-            >
-              <Undo2 className="h-3.5 w-3.5" />
-              Vrátenie
-            </Link>
+              {isHandover && !hasReturn && (
+                <Link
+                  href={`/protokol/${protocol.id}/vratenie`}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-solid px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-solid_hover"
+                >
+                  <Undo2 className="h-3.5 w-3.5" />
+                  Vrátenie
+                </Link>
+              )}
+            </>
           )}
         </div>
       </div>

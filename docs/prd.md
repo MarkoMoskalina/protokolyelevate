@@ -4,22 +4,22 @@ overview: Kompletný PRD pre novú internú Next.js aplikáciu na odovzdávacie 
 todos:
   - id: phase-1-setup
     content: "Fáza 1: Vytvorenie projektu, Supabase setup, auth, DB migrácia"
-    status: pending
+    status: completed
   - id: phase-2-dashboard
     content: "Fáza 2: Dashboard layout, zoznam protokolov, karty"
-    status: pending
+    status: completed
   - id: phase-3-handover
     content: "Fáza 3: Formulár odovzdávacieho protokolu (všetky sekcie + upload)"
-    status: pending
+    status: completed
   - id: phase-4-pdf-email
     content: "Fáza 4: PDF generovanie, upload do Storage, email s prílohou"
-    status: pending
+    status: completed
   - id: phase-5-detail-public
     content: "Fáza 5: Detail protokolu + verejné zobrazenie s kódom"
-    status: pending
+    status: completed
   - id: phase-6-return
     content: "Fáza 6: Preberací protokol (vrátenie) + výpočet km"
-    status: pending
+    status: completed
   - id: phase-7-deploy
     content: "Fáza 7: Nasadenie na Vercel + doména"
     status: pending
@@ -518,44 +518,67 @@ protokoly-elevatecars/
 
 ## 12. Implementačný plán (poradie)
 
-### Fáza 1: Základ (projekt + auth + DB)
-1. Vytvoriť Next.js 16 projekt s Tailwind 4
-2. Nastaviť Supabase klienty (client, server, admin)
-3. Vytvoriť databázovú migráciu (`handover_protocols` + storage buckety)
-4. Pushnúť migráciu na DEV Supabase
-5. Vygenerovať `database.types.ts`
-6. Implementovať auth (login stránka + admin guard + proxy)
+### Fáza 1: Základ (projekt + auth + DB) ✅ COMPLETED
+1. ✅ Vytvoriť Next.js 16 projekt s Tailwind 4
+2. ✅ Nastaviť Supabase klienty (client, server, admin)
+3. ✅ Vytvoriť databázovú migráciu (`handover_protocols` + storage buckety)
+4. ✅ Pushnúť migráciu na DEV Supabase
+5. ✅ Vygenerovať `database.types.ts`
+6. ✅ Implementovať auth (login stránka + admin guard + proxy)
 
-### Fáza 2: Dashboard
-7. Layout (header, navigácia, mobile-friendly shell)
-8. Dashboard stránka — zoznam protokolov s tabmi a vyhľadávaním
-9. Protocol card komponent
+### Fáza 2: Dashboard ✅ COMPLETED
+7. ✅ Layout (header, navigácia, mobile-friendly shell)
+8. ✅ Dashboard stránka — zoznam protokolov s tabmi a vyhľadávaním
+9. ✅ Protocol card komponent (s thumbnail z `car_photos[0]` cez signed URL)
 
-### Fáza 3: Odovzdávací protokol
-10. Formulár — sekcia zákazník
-11. Formulár — sekcia vozidlo + prenájom (vrátane výberu z rezervácií)
-12. Formulár — sekcia stav vozidla (fotky, km, palivo)
-13. Formulár — sekcia poškodenia (opakovateľné)
-14. Formulár — sekcia financie
-15. Formulár — podpisový canvas
-16. Upload fotiek (camera support na mobile)
-17. API route pre uloženie protokolu
+### Fáza 3: Odovzdávací protokol ✅ COMPLETED
+10. ✅ Formulár — sekcia zákazník (vrátane povinných fotiek OP front/back, vodičák)
+11. ✅ Formulár — sekcia vozidlo + prenájom (vrátane výberu z rezervácií, fix timezone bugu)
+12. ✅ Formulár — sekcia stav vozidla (fotky, km, palivo)
+13. ✅ Formulár — sekcia poškodenia (opakovateľné, multi-foto upload)
+14. ✅ Formulár — sekcia financie
+15. ✅ Formulár — podpisový canvas (modal s "Podpísať" buttonom + full-screen pad)
+16. ✅ Upload fotiek (camera support na mobile, lightbox s navigáciou)
+17. ✅ API route pre uloženie protokolu (POST + PATCH pre drafty)
+18. ✅ "Predpripravené" workflow — secondary button "Uložiť ako predpripravené" + nová kategória na `/novy`
+19. ✅ Cross-environment UUID helper (`lib/uuid.ts`) — fallback pre HTTP/iOS bez secure context
 
-### Fáza 4: PDF + Email
-18. PDF šablóna (@react-pdf/renderer)
-19. API route pre generovanie + upload PDF
-20. Email šablóna (React Email + Resend)
-21. Odoslanie emailu s PDF prílohou
+### Fáza 4: PDF + Email ✅ COMPLETED
+18. ✅ PDF šablóna (`components/pdf/protocol-pdf.tsx` — @react-pdf/renderer)
+    - Roboto font (Regular/Medium/Bold/Italic) pre plnú podporu slovenských diakritík
+    - Hardcoded "Elevate Cars" branding (`email`/`phone` z `public.settings`)
+    - Sekcie: zákazník, vozidlo, stav, financie, poškodenia, podpisy, access kód
+    - Pre return protokoly: km prekročenie + porovnanie s handover stavom
+19. ✅ API route `POST /api/protocols/[id]/pdf` — vygeneruje, uloží do `protocol-documents` bucketu, vráti signed URL, uloží `pdf_url` do DB
+20. ✅ Email šablóna (`lib/email-templates.ts`) — HTML + plain text, "Tím Elevate Cars" signature
+21. ✅ Odoslanie emailu s PDF prílohou cez Resend (`POST /api/protocols/[id]/email`)
+    - From: `Elevate Cars <protokoly@elevatecars.sk>` (override cez `RESEND_FROM_EMAIL`)
+    - Reply-To: kontaktný email firmy z `public.settings`
+    - Filename prílohy: `odovzdavaci-protokol-{ACCESS_CODE}.pdf` (alebo `preberaci-`)
+22. ✅ Klientský flow vo `protocol-form.tsx`: po `POST /api/protocols` sa awaitujú PDF + email volania pred redirectom (toast progres "Generujem PDF a posielam email...")
+23. ✅ Lokálny preview script `scripts/preview-protocol.tsx` (handover + return PDF + HTML email)
 
-### Fáza 5: Detail + Verejné zobrazenie
-22. Detail protokolu stránka
-23. Verejná stránka — zadanie kódu
-24. Verejná stránka — zobrazenie protokolu
+### Fáza 5: Detail + Verejné zobrazenie ✅ COMPLETED
+24. ✅ Detail protokolu stránka `/protokol/[id]` — všetky sekcie + galéria fotiek + lightbox
+25. ✅ Akcie na detaile: Stiahnuť PDF / Regenerovať PDF / Poslať email znova / Vytvoriť preberací protokol
+26. ✅ Server-side helper `lib/queries/protocol-detail.ts` — generuje signed URLs pre všetky fotky v jednom batchi (1h expirácia) + signed URL pre PDF
+27. ✅ Reusable komponent `ProtocolDetailView` (s `isPublic` prop) — zdieľaný medzi admin a verejným zobrazením
+28. ✅ Verejná stránka `/zobrazenie` — 6-cifrový kód input (auto-focus medzi políčkami, paste support, OTP autocomplete)
+29. ✅ API route `POST /api/public/verify` — overí kód (admin client, neexponuje protokol ID kým kód nie je správny)
+30. ✅ Verejný detail `/zobrazenie/[id]` — skryté: depozit, interné poznámky, podpis prenajímateľa, doklady zákazníka, prístupový kód
+31. ✅ Email šablóna obsahuje **one-click link** s predvyplneným kódom (`?kod=XXXXXX`) + manuálny fallback
+32. ✅ Po vytvorení protokolu → redirect na `/protokol/[id]` (nie na 404)
 
-### Fáza 6: Preberací protokol
-25. Formulár vrátenia (predvyplnenie z handoveru)
-26. Automatický výpočet prekročenia km
-27. PDF + email pre vrátenie
+### Fáza 6: Preberací protokol ✅ COMPLETED
+33. ✅ Stránka `/protokol/[id]/vratenie` — predvyplnenie z handoveru (zákazník, auto, ŠPZ readonly)
+34. ✅ Reusable `ProtocolForm` rozšírený o `mode: "handover" | "return"` — skrýva sekcie nepotrebné pre return (financie, dokumenty zákazníka, draft button)
+35. ✅ Helper `computeKmExceedance()` + komponent `KmExceedanceSummary` — vizuálne live zobrazenie prekročenia (driven, allowed, exceeded, cena)
+36. ✅ Server-side prepočet km exceedance v `POST /api/protocols` — používa **DB hodnoty** (handover.mileage_km, allowed_km), rate z `reservations.extra_km_price` (preferred) alebo `cars.extra_km_price` (fallback). Klient nemá vplyv na výpočet.
+37. ✅ Validácia `validateReturnForm` — vyžaduje km/palivo/4 fotky/podpisy + chyba ak je km nižší než pri handovere
+38. ✅ Detail handover protokolu — ak existuje return: link "Zobraziť preberací protokol" namiesto buttonu "Vytvoriť preberací protokol"
+39. ✅ Detail return protokolu — link "Zobraziť odovzdávací protokol" späť na zdrojový handover
+40. ✅ PDF + email — funguje rovnako (PDF `protocol-pdf.tsx` už mal return-only sekciu s km prekročením)
+41. ✅ Ochrana proti duplicite — ak na handover už existuje return, page redirectne priamo na detail return protokolu
 
 ### Fáza 7: Nasadenie
 28. Nastaviť Vercel projekt
@@ -591,3 +614,17 @@ protokoly-elevatecars/
 4. **Firemné údaje** pre PDF (názov firmy, IČO, adresa — alebo ich načítam z tabuľky `settings` ak tam sú)
 
 5. **Doména** — nastaviť DNS pre `protokoly.elevatecars.sk` na Vercel
+
+---
+
+## 15. Status implementácie
+
+| Fáza | Stav | Poznámka |
+|---|---|---|
+| Fáza 1: Setup + auth + DB | ✅ Done | Migrácia `20260427004500_create_handover_protocols.sql` + nullable fix `20260427224500_make_protocol_fields_nullable_for_drafts.sql` |
+| Fáza 2: Dashboard | ✅ Done | Karty s thumbnailami, taby, search |
+| Fáza 3: Handover formulár | ✅ Done | + drafty + lightbox + signature modal |
+| Fáza 4: PDF + Email | ✅ Done | Roboto font, Elevate Cars branding, Resend |
+| Fáza 5: Detail + Verejné zobrazenie | ✅ Done | Admin detail + verejné `/zobrazenie` s 6-cifrovým kódom + one-click link v emaile |
+| Fáza 6: Return protokol | ✅ Done | Predvyplnenie z handoveru, live km kalkulácia, server-side rate z reservations/cars |
+| Fáza 7: Deploy | ⏳ Pending | — |

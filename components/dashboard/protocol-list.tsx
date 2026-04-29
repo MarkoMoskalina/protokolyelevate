@@ -4,7 +4,11 @@ import { ProtocolCard } from "@/components/protocol-card/protocol-card";
 import type { Protocol } from "@/lib/protocols";
 
 interface ProtocolListProps {
-  protocols: { protocol: Protocol; hasReturn: boolean }[];
+  protocols: {
+    protocol: Protocol;
+    hasReturn: boolean;
+    returnProtocolId: string | null;
+  }[];
 }
 
 export function ProtocolList({ protocols }: ProtocolListProps) {
@@ -28,11 +32,12 @@ export function ProtocolList({ protocols }: ProtocolListProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      {protocols.map(({ protocol, hasReturn }) => (
+      {protocols.map(({ protocol, hasReturn, returnProtocolId }) => (
         <ProtocolCard
           key={protocol.id}
           protocol={protocol}
           hasReturn={hasReturn}
+          returnProtocolId={returnProtocolId}
         />
       ))}
     </div>

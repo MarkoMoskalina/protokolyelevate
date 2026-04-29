@@ -70,6 +70,9 @@ const baseProtocol: Protocol = {
   internal_notes: "Zákazník platil kartou, depozit blokovaný.",
   pdf_url: null,
   access_code: "739204",
+  access_token:
+    "9f1c2b8a4d6e7f3091a5b7c2d8e4f1a96b3c5d7e9f0a1b2c3d4e5f6a7b8c9d01",
+  access_expires_at: "2026-07-27T13:55:00Z",
   created_by: null,
   created_at: "2026-04-28T13:55:00Z",
   updated_at: "2026-04-28T13:55:00Z",
@@ -97,6 +100,9 @@ const returnProtocol: Protocol = {
   ],
   internal_notes: null,
   access_code: "184562",
+  access_token:
+    "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+  access_expires_at: "2026-07-29T11:30:00Z",
 };
 
 // 1x1 transparent PNG as a placeholder signature
@@ -112,7 +118,6 @@ async function main() {
     <ProtocolPdf
       protocol={baseProtocol}
       company={company}
-      appUrl="https://protokoly.elevatecars.sk"
       signatureLandlordDataUrl={PLACEHOLDER_SIGNATURE}
       signatureTenantDataUrl={PLACEHOLDER_SIGNATURE}
     />,
@@ -124,7 +129,6 @@ async function main() {
     <ProtocolPdf
       protocol={returnProtocol}
       company={company}
-      appUrl="https://protokoly.elevatecars.sk"
       signatureLandlordDataUrl={PLACEHOLDER_SIGNATURE}
       signatureTenantDataUrl={PLACEHOLDER_SIGNATURE}
     />,

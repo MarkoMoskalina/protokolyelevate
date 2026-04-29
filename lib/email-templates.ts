@@ -43,8 +43,18 @@ export function buildProtocolEmail({
   const customerName = `${protocol.customer_first_name} ${protocol.customer_last_name}`.trim();
   const car = `${protocol.car_name} (${protocol.car_license_plate})`;
   const date = formatDateTime(protocol.protocol_datetime);
-  const viewUrl = `${appUrl}/zobrazenie`;
   const code = protocol.access_code;
+  // Personal link with the secret token. The 6-digit code is also pre-filled
+  // via ?kod= so the user only needs one click.
+  const protocolUrl = `${appUrl}/zobrazenie/${protocol.access_token}`;
+  const oneClickUrl = `${protocolUrl}?kod=${encodeURIComponent(code)}`;
+  const validUntil = protocol.access_expires_at
+    ? new Date(protocol.access_expires_at).toLocaleDateString("sk-SK", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : null;
 
   const text = [
     `Dobrý deň ${customerName},`,
@@ -54,9 +64,12 @@ export function buildProtocolEmail({
     "",
     "Protokol nájdete v prílohe tohto emailu.",
     "",
-    "Pre zobrazenie kompletnej fotodokumentácie navštívte:",
-    viewUrl,
-    `Prístupový kód: ${code}`,
+    "Pre zobrazenie kompletnej fotodokumentácie kliknite na link:",
+    oneClickUrl,
+    "",
+    `Alebo otvorte ${protocolUrl} a zadajte kód: ${code}`,
+    "",
+    validUntil ? `Link platí do ${validUntil}.` : "",
     "",
     "S pozdravom,",
     `Tím ${BRAND}`,
@@ -110,17 +123,23 @@ export function buildProtocolEmail({
               </p>
 
               <div style="margin:24px 0;padding:18px;border:1px solid #e2e8f0;border-left:3px solid #2563eb;border-radius:8px;background:#f8fafc;">
-                <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Fotodokumentácia online</div>
-                <div style="font-size:13px;color:#475569;margin-bottom:8px;">
-                  Pre zobrazenie kompletnej fotodokumentácie navštívte:
+                <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Fotodokumentácia online</div>
+                <div style="margin:0 0 14px;">
+                  <a href="${escapeHtml(oneClickUrl)}" style="display:inline-block;padding:10px 18px;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;border-radius:6px;">
+                    Otvoriť protokol &rarr;
+                  </a>
                 </div>
-                <div style="margin-bottom:10px;">
-                  <a href="${escapeHtml(viewUrl)}" style="color:#2563eb;font-weight:600;text-decoration:none;font-size:14px;">${escapeHtml(viewUrl)}</a>
+                <div style="font-size:12px;color:#64748b;line-height:1.6;">
+                  Alebo manuálne otvorte <a href="${escapeHtml(protocolUrl)}" style="color:#2563eb;text-decoration:none;word-break:break-all;">${escapeHtml(protocolUrl)}</a> a zadajte 6-ciferný kód:
                 </div>
-                <div style="font-size:13px;color:#475569;margin-bottom:6px;">a zadajte kód:</div>
-                <div style="font-size:24px;font-weight:700;letter-spacing:6px;color:#2563eb;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">
+                <div style="margin-top:6px;font-size:22px;font-weight:700;letter-spacing:6px;color:#2563eb;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">
                   ${escapeHtml(code)}
                 </div>
+                ${
+                  validUntil
+                    ? `<div style="margin-top:12px;font-size:11px;color:#94a3b8;">Link platí do ${escapeHtml(validUntil)} (90 dní od vytvorenia protokolu).</div>`
+                    : ""
+                }
               </div>
 
               <p style="margin:24px 0 0;font-size:13px;color:#475569;line-height:1.5;">

@@ -48,7 +48,7 @@ export async function fetchDashboardStats(
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const thisMonthProtocols = allHandovers.filter(
-    (h) => h.created_at >= startOfMonth,
+    (h) => h.created_at !== null && h.created_at >= startOfMonth,
   ).length;
 
   const { data: recent, error: recentErr } = await supabase

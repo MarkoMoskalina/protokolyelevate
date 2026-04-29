@@ -29,6 +29,7 @@ export function Input({ error, className, ...props }: InputProps) {
       className={cn(
         "w-full rounded-lg border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-placeholder outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/20",
         error ? "border-error" : "border-primary",
+        props.readOnly && "bg-secondary text-secondary cursor-default",
         className,
       )}
       {...props}

@@ -112,14 +112,10 @@ export async function POST(
       loadSignatureAsDataUrl(admin, protocol.signature_tenant_url),
     ]);
 
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL || "https://protokoly.elevatecars.sk";
-
     const buffer = await renderToBuffer(
       <ProtocolPdf
         protocol={protocol}
         company={company}
-        appUrl={appUrl}
         signatureLandlordDataUrl={signatureLandlord}
         signatureTenantDataUrl={signatureTenant}
       />,
