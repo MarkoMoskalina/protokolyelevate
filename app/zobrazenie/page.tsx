@@ -4,6 +4,8 @@ import { Mail, MailOpen } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchCompanyInfo } from "@/lib/company";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Zobrazenie protokolu | Elevate Cars",
   description:
