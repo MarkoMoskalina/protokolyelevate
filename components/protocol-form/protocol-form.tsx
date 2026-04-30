@@ -80,6 +80,31 @@ export function ProtocolForm({ initialData }: ProtocolFormProps) {
 
     setSubmitting(asDraft ? "draft" : "completed");
 
+    // Spočítame všetky súbory čakajúce na kompresiu+upload, aby sme používateľovi
+    // ukázali zmysluplný progress (kompresia 12MP fotky trvá 1-3s na strednom mobile).
+    const fileCount =
+      [
+        form.customer_id_card_front,
+        form.customer_id_card_back,
+        form.customer_driver_license,
+        form.mileage_photo,
+        form.fuel_photo,
+      ].filter((v) => v instanceof File).length +
+      form.car_photos.filter((v) => v instanceof File).length +
+      form.damages.reduce(
+        (sum, d) => sum + d.photos.filter((v) => v instanceof File).length,
+        0,
+      );
+
+    const uploadToastId =
+      fileCount > 0
+        ? toast.loading(
+            fileCount === 1
+              ? "Spracovávam fotku..."
+              : `Spracovávam ${fileCount} fotiek...`,
+          )
+        : null;
+
     try {
       // Reuse the same storage folder for updates so we don't orphan files.
       // For return protocols we always create a new id (no draft flow).
@@ -162,6 +187,8 @@ export function ProtocolForm({ initialData }: ProtocolFormProps) {
         uploadSignatureOrKeep(form.signature_landlord),
         uploadSignatureOrKeep(form.signature_tenant),
       ]);
+
+      if (uploadToastId !== null) toast.dismiss(uploadToastId);
 
       const payload = {
         ...(form.protocol_id && !isReturn ? { id: form.protocol_id } : {}),
@@ -256,6 +283,7 @@ export function ProtocolForm({ initialData }: ProtocolFormProps) {
 
       router.push(`/protokol/${id}`);
     } catch (err) {
+      if (uploadToastId !== null) toast.dismiss(uploadToastId);
       toast.error(
         err instanceof Error ? err.message : "Nepodarilo sa uložiť protokol",
       );

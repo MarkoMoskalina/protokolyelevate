@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -10,10 +11,12 @@ import {
   LogOut,
   X,
   ExternalLink,
+  Settings,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 import { cn } from "@/lib/utils";
+import { UserSettingsModal } from "@/components/layout/user-settings-modal";
 
 interface SidebarProps {
   user: User;
@@ -41,6 +44,7 @@ export function Sidebar({ user, open, onClose, onSignOut }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("tab");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   function isActive(item: NavItem) {
     if (item.tab) {
@@ -125,20 +129,31 @@ export function Sidebar({ user, open, onClose, onSignOut }: SidebarProps) {
         </div>
 
         {/* User footer */}
-        <div className="border-t border-secondary p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">
-              {user.email?.charAt(0).toUpperCase() || "U"}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium text-primary">
-                {user.user_metadata?.full_name || user.email?.split("@")[0] || "Používateľ"}
-              </p>
-              <p className="text-xs text-tertiary">Admin</p>
-            </div>
+        <div className="border-t border-secondary p-2">
+          <div className="flex items-center gap-1">
             <button
+              type="button"
+              onClick={() => { onClose(); setSettingsOpen(true); }}
+              className="flex flex-1 min-w-0 items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-secondary_hover"
+              title="Nastavenia účtu"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">
+                {user.email?.charAt(0).toUpperCase() || "U"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="truncate text-sm font-medium text-primary">
+                  {user.user_metadata?.full_name || user.email?.split("@")[0] || "Používateľ"}
+                </p>
+                <p className="flex items-center gap-1 text-xs text-tertiary">
+                  <Settings className="h-3 w-3" />
+                  Nastavenia
+                </p>
+              </div>
+            </button>
+            <button
+              type="button"
               onClick={onSignOut}
-              className="rounded-lg p-2 text-tertiary transition-colors hover:bg-secondary_hover hover:text-primary"
+              className="shrink-0 rounded-lg p-2 text-tertiary transition-colors hover:bg-secondary_hover hover:text-primary"
               title="Odhlásiť sa"
             >
               <LogOut className="h-4 w-4" />
@@ -146,6 +161,13 @@ export function Sidebar({ user, open, onClose, onSignOut }: SidebarProps) {
           </div>
         </div>
       </aside>
+
+      {settingsOpen && (
+        <UserSettingsModal
+          user={user}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
     </>
   );
 }

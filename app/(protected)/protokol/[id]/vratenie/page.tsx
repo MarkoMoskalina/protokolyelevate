@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { ProtocolForm } from "@/components/protocol-form/protocol-form";
+import { getCurrentEmployeeSignedSignatureUrl } from "@/lib/queries/employee-signature";
 import type { ProtocolFormData } from "@/lib/form-types";
 
 interface ReturnProtocolPageProps {
@@ -23,7 +24,7 @@ export default async function ReturnProtocolPage({
   params,
 }: ReturnProtocolPageProps) {
   const { id: handoverId } = await params;
-  const supabase = await createClient();
+  const { user, supabase } = await requireAdmin();
 
   // Load the source handover protocol
   const { data: handover, error } = await supabase
@@ -69,6 +70,11 @@ export default async function ReturnProtocolPage({
     extraKmRate = car?.extra_km_price ?? null;
   }
 
+  const defaultLandlordSignature = await getCurrentEmployeeSignedSignatureUrl(
+    supabase,
+    user.id,
+  );
+
   const initialData: Partial<ProtocolFormData> = {
     mode: "return",
     handover_protocol_id: handover.id,
@@ -90,6 +96,12 @@ export default async function ReturnProtocolPage({
     // The return is happening NOW; user can adjust if needed
     protocol_datetime: nowAsLocalDateTimeString(),
     location: handover.location ?? "",
+
+    // Pre-fill landlord signature from the employee's saved signature.
+    // The user can replace it with "Podpísať znova" if needed.
+    ...(defaultLandlordSignature
+      ? { signature_landlord: defaultLandlordSignature }
+      : {}),
   };
 
   return <ProtocolForm initialData={initialData} />;

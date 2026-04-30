@@ -1,32 +1,17 @@
-"use client";
+import { requireAdmin } from "@/lib/auth";
+import { getCurrentEmployeeSignedSignatureUrl } from "@/lib/queries/employee-signature";
 
-import { useState } from "react";
+import { NewProtocolClient } from "./new-protocol-client";
 
-import { ReservationPicker } from "@/components/protocol-form/reservation-picker";
-import { ProtocolForm } from "@/components/protocol-form/protocol-form";
-import type { ProtocolFormData } from "@/lib/form-types";
+export default async function NewProtocolPage() {
+  const { user, supabase } = await requireAdmin();
 
-export default function NewProtocolPage() {
-  const [step, setStep] = useState<"pick" | "form">("pick");
-  const [initialData, setInitialData] = useState<Partial<ProtocolFormData>>({});
+  const defaultLandlordSignature = await getCurrentEmployeeSignedSignatureUrl(
+    supabase,
+    user.id,
+  );
 
-  function handleReservationSelect(patch: Partial<ProtocolFormData>) {
-    setInitialData((prev) => ({ ...prev, ...patch }));
-    setStep("form");
-  }
-
-  function handleSkip() {
-    setStep("form");
-  }
-
-  if (step === "pick") {
-    return (
-      <ReservationPicker
-        onSelect={handleReservationSelect}
-        onSkip={handleSkip}
-      />
-    );
-  }
-
-  return <ProtocolForm initialData={initialData} />;
+  return (
+    <NewProtocolClient defaultLandlordSignature={defaultLandlordSignature} />
+  );
 }

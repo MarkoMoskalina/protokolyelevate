@@ -173,8 +173,12 @@ function SignatureModal({ label, onSave, onClose }: SignatureModalProps) {
     [getPos],
   );
 
-  const endDraw = useCallback(() => {
+  const endDraw = useCallback((e?: React.TouchEvent | React.MouseEvent) => {
+    if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
+    if (e && "touches" in e) {
+      e.preventDefault();
+    }
   }, []);
 
   function handleReset() {
@@ -186,26 +190,38 @@ function SignatureModal({ label, onSave, onClose }: SignatureModalProps) {
     setHasStrokes(false);
   }
 
+  const hasStrokesRef = useRef(false);
+  useEffect(() => {
+    hasStrokesRef.current = hasStrokes;
+  }, [hasStrokes]);
+
   const savingRef = useRef(false);
 
-  function handleSave() {
+  const handleSave = useCallback(() => {
     if (savingRef.current) return;
-    savingRef.current = true;
     const canvas = canvasRef.current;
-    if (!canvas) { savingRef.current = false; return; }
+    if (!canvas) return;
+    if (!hasStrokesRef.current) return;
+    savingRef.current = true;
     const dataUrl = canvas.toDataURL("image/png");
     onSave(dataUrl);
-  }
+  }, [onSave]);
+
+  // iOS Safari sometimes drops the first synthetic `click` that follows a
+  // recently-cancelled touch sequence on the canvas above. Triggering save
+  // on `pointerup` makes the first tap reliable across browsers / devices.
+  const handleSavePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      handleSave();
+    },
+    [handleSave],
+  );
 
   return createPortal(
-    // Outer wrapper stops all events from reaching the form underneath
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#fff" }}
       className="flex flex-col"
-      onSubmit={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      onTouchEnd={(e) => e.stopPropagation()}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-secondary px-4 py-3">
@@ -253,8 +269,10 @@ function SignatureModal({ label, onSave, onClose }: SignatureModalProps) {
       <div className="border-t border-secondary p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
         <button
           type="button"
+          onPointerUp={handleSavePointerUp}
           onClick={handleSave}
           disabled={!hasStrokes}
+          style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
           className="w-full rounded-lg bg-brand-solid py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-solid_hover disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Uložiť podpis
