@@ -1,10 +1,20 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Search, Check, MapPin, ArrowRight, Bookmark, Pencil } from "lucide-react";
+import {
+  Search,
+  Check,
+  MapPin,
+  ArrowRight,
+  Bookmark,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import type { ProtocolFormData, DamageEntry } from "@/lib/form-types";
 import { uuid } from "@/lib/uuid";
 
@@ -132,57 +142,60 @@ export function ReservationPicker({ onSelect, onSkip }: ReservationPickerProps) 
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const [resumingDraft, setResumingDraft] = useState<string | null>(null);
+  const [deletingDraft, setDeletingDraft] = useState<string | null>(null);
+  const [draftToDelete, setDraftToDelete] = useState<DraftProtocol | null>(null);
+
+  const load = useCallback(async () => {
+    const supabase = createClient();
+
+    const { data: allProtocols } = await supabase
+      .from("handover_protocols")
+      .select("id, status, reservation_id, customer_first_name, customer_last_name, customer_email, customer_phone, customer_id_card_front_url, customer_id_card_back_url, customer_driver_license_url, car_name, car_license_plate, car_id, reservation_number, protocol_datetime, expected_return_datetime, location, mileage_km, mileage_photo_url, fuel_level, fuel_photo_url, allowed_km, deposit_amount, deposit_method, car_photos, damages, signature_landlord_url, signature_tenant_url, internal_notes, updated_at")
+      .order("updated_at", { ascending: false });
+
+    const draftRows = (allProtocols ?? []).filter((p) => p.status === "draft");
+    const completedReservationIds = (allProtocols ?? [])
+      .filter((p) => p.status !== "draft" && p.reservation_id)
+      .map((p) => p.reservation_id) as string[];
+
+    // Hide reservations that already have a draft (it shows up under "Predpripravené")
+    const draftReservationIds = draftRows
+      .map((p) => p.reservation_id)
+      .filter(Boolean) as string[];
+
+    const hiddenReservationIds = [
+      ...new Set([...completedReservationIds, ...draftReservationIds]),
+    ];
+
+    const todayLocal = new Date();
+    const todayStart = new Date(todayLocal.getFullYear(), todayLocal.getMonth(), todayLocal.getDate()).toISOString();
+
+    let query = supabase
+      .from("reservations")
+      .select(
+        "id, reservation_number, pickup_datetime, dropoff_datetime, status, total_price, total_allowed_km, km_per_day, extra_km_price, customer_id, car_id, " +
+        "customer:customers(first_name, last_name, email, phone, id_card_front_url, id_card_back_url, driver_license_front_url), " +
+        "car:cars(model, license_plate, extra_km_price, deposit_amount, images, brand:brands(name)), " +
+        "pickup_location:pickup_locations!pickup_location_id(name)"
+      )
+      .eq("status", "confirmed")
+      .gte("pickup_datetime", todayStart)
+      .order("pickup_datetime", { ascending: true })
+      .limit(50);
+
+    if (hiddenReservationIds.length > 0) {
+      query = query.not("id", "in", `(${hiddenReservationIds.join(",")})`);
+    }
+
+    const { data } = await query;
+    setReservations((data as unknown as Reservation[]) ?? []);
+    setDrafts(draftRows as unknown as DraftProtocol[]);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    async function load() {
-      const supabase = createClient();
-
-      const { data: allProtocols } = await supabase
-        .from("handover_protocols")
-        .select("id, status, reservation_id, customer_first_name, customer_last_name, customer_email, customer_phone, customer_id_card_front_url, customer_id_card_back_url, customer_driver_license_url, car_name, car_license_plate, car_id, reservation_number, protocol_datetime, expected_return_datetime, location, mileage_km, mileage_photo_url, fuel_level, fuel_photo_url, allowed_km, deposit_amount, deposit_method, car_photos, damages, signature_landlord_url, signature_tenant_url, internal_notes, updated_at")
-        .order("updated_at", { ascending: false });
-
-      const draftRows = (allProtocols ?? []).filter((p) => p.status === "draft");
-      const completedReservationIds = (allProtocols ?? [])
-        .filter((p) => p.status !== "draft" && p.reservation_id)
-        .map((p) => p.reservation_id) as string[];
-
-      // Hide reservations that already have a draft (it shows up under "Predpripravené")
-      const draftReservationIds = draftRows
-        .map((p) => p.reservation_id)
-        .filter(Boolean) as string[];
-
-      const hiddenReservationIds = [
-        ...new Set([...completedReservationIds, ...draftReservationIds]),
-      ];
-
-      const todayLocal = new Date();
-      const todayStart = new Date(todayLocal.getFullYear(), todayLocal.getMonth(), todayLocal.getDate()).toISOString();
-
-      let query = supabase
-        .from("reservations")
-        .select(
-          "id, reservation_number, pickup_datetime, dropoff_datetime, status, total_price, total_allowed_km, km_per_day, extra_km_price, customer_id, car_id, " +
-          "customer:customers(first_name, last_name, email, phone, id_card_front_url, id_card_back_url, driver_license_front_url), " +
-          "car:cars(model, license_plate, extra_km_price, deposit_amount, images, brand:brands(name)), " +
-          "pickup_location:pickup_locations!pickup_location_id(name)"
-        )
-        .eq("status", "confirmed")
-        .gte("pickup_datetime", todayStart)
-        .order("pickup_datetime", { ascending: true })
-        .limit(50);
-
-      if (hiddenReservationIds.length > 0) {
-        query = query.not("id", "in", `(${hiddenReservationIds.join(",")})`);
-      }
-
-      const { data } = await query;
-      setReservations((data as unknown as Reservation[]) ?? []);
-      setDrafts(draftRows as unknown as DraftProtocol[]);
-      setLoading(false);
-    }
     load();
-  }, []);
+  }, [load]);
 
   const filtered = reservations.filter((r) => {
     if (!search) return true;
@@ -193,6 +206,32 @@ export function ReservationPicker({ onSelect, onSkip }: ReservationPickerProps) 
     const carName = `${r.car?.brand?.name ?? ""} ${r.car?.model ?? ""}`.toLowerCase();
     return name.includes(term) || plate.includes(term) || num.includes(term) || carName.includes(term);
   });
+
+  const confirmDeleteDraft = useCallback(async () => {
+    const d = draftToDelete;
+    if (!d) return;
+
+    setDeletingDraft(d.id);
+    try {
+      const res = await fetch(`/api/protocols/${d.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error || "Zmazanie sa nepodarilo");
+        return;
+      }
+      // Optimistic UI removal so the row disappears immediately, then a full
+      // refresh re-surfaces the freed reservation under "Dostupné rezervácie".
+      setDrafts((prev) => prev.filter((x) => x.id !== d.id));
+      setDraftToDelete(null);
+      toast.success("Predpripravený protokol bol zmazaný");
+      await load();
+    } catch (err) {
+      console.error("Delete draft failed", err);
+      toast.error("Zmazanie sa nepodarilo");
+    } finally {
+      setDeletingDraft(null);
+    }
+  }, [draftToDelete, load]);
 
   const handleResumeDraft = useCallback(
     async (d: DraftProtocol) => {
@@ -352,6 +391,8 @@ export function ReservationPicker({ onSelect, onSkip }: ReservationPickerProps) 
               <div className="flex flex-col gap-2">
                 {drafts.map((d) => {
                   const isResuming = resumingDraft === d.id;
+                  const isDeleting = deletingDraft === d.id;
+                  const isBusy = isResuming || isDeleting;
                   const updated = new Date(d.updated_at).toLocaleDateString("sk-SK", {
                     day: "numeric",
                     month: "numeric",
@@ -359,33 +400,49 @@ export function ReservationPicker({ onSelect, onSkip }: ReservationPickerProps) 
                     minute: "2-digit",
                   });
                   return (
-                    <button
+                    <div
                       key={d.id}
-                      type="button"
-                      onClick={() => handleResumeDraft(d)}
-                      disabled={isResuming}
-                      className="flex items-center gap-3 rounded-xl border border-secondary bg-primary p-3 text-left transition-all hover:border-brand/50 disabled:opacity-60"
+                      className={`flex items-center gap-1 rounded-xl border border-secondary bg-primary pr-1 transition-all hover:border-brand/50 ${
+                        isBusy ? "opacity-60" : ""
+                      }`}
                     >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10">
-                        <Pencil className="h-4 w-4 text-brand" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-primary">
-                          {d.car_name}
-                          {d.car_license_plate && (
-                            <span className="ml-1 text-xs font-medium text-tertiary">· {d.car_license_plate}</span>
-                          )}
-                        </p>
-                        <p className="truncate text-xs text-secondary">
-                          {d.customer_first_name} {d.customer_last_name}
-                          {d.reservation_number && (
-                            <span className="text-tertiary"> · {d.reservation_number}</span>
-                          )}
-                        </p>
-                        <p className="mt-0.5 text-xs text-tertiary">Uložené {updated}</p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-tertiary" />
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => handleResumeDraft(d)}
+                        disabled={isBusy}
+                        className="flex flex-1 items-center gap-3 rounded-l-xl p-3 text-left disabled:cursor-not-allowed"
+                      >
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10">
+                          <Pencil className="h-4 w-4 text-brand" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-primary">
+                            {d.car_name}
+                            {d.car_license_plate && (
+                              <span className="ml-1 text-xs font-medium text-tertiary">· {d.car_license_plate}</span>
+                            )}
+                          </p>
+                          <p className="truncate text-xs text-secondary">
+                            {d.customer_first_name} {d.customer_last_name}
+                            {d.reservation_number && (
+                              <span className="text-tertiary"> · {d.reservation_number}</span>
+                            )}
+                          </p>
+                          <p className="mt-0.5 text-xs text-tertiary">Uložené {updated}</p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-tertiary" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDraftToDelete(d)}
+                        disabled={isBusy}
+                        title="Zmazať predpripravený protokol"
+                        aria-label="Zmazať predpripravený protokol"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-tertiary transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
@@ -519,6 +576,31 @@ export function ReservationPicker({ onSelect, onSkip }: ReservationPickerProps) 
           </button>
         </div>
       )}
+
+      <ConfirmModal
+        open={draftToDelete !== null}
+        title="Zmazať predpripravený protokol?"
+        description={
+          draftToDelete
+            ? `Naozaj chcete odstrániť predpripravený protokol pre ${
+                draftToDelete.car_name || "auto"
+              }${
+                draftToDelete.car_license_plate
+                  ? ` (${draftToDelete.car_license_plate})`
+                  : ""
+              }? Túto akciu nie je možné vrátiť späť.`
+            : undefined
+        }
+        confirmLabel="Zmazať"
+        cancelLabel="Zrušiť"
+        variant="danger"
+        loading={deletingDraft !== null}
+        onConfirm={confirmDeleteDraft}
+        onCancel={() => {
+          if (deletingDraft) return;
+          setDraftToDelete(null);
+        }}
+      />
     </div>
   );
 }
