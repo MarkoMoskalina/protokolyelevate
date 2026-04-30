@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import { RouteProvider } from "@/providers/route-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
@@ -11,12 +12,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: "Protokoly Elevate",
-    description: "",
+    title: "Protokoly | ElevateCars",
+    description: "Digitálne odovzdávacie a preberacie protokoly vozidiel",
 };
 
 export const viewport: Viewport = {
     colorScheme: "light",
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -25,11 +29,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="sk" className={`${inter.variable} scroll-smooth`}>
+        <html lang="sk" className={`${inter.variable} scroll-smooth`} suppressHydrationWarning>
             <body className="bg-primary antialiased">
                 <RouteProvider>
                     <ThemeProvider>
                         {children}
+                        <Toaster position="top-center" richColors closeButton />
                     </ThemeProvider>
                 </RouteProvider>
             </body>

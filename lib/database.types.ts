@@ -1,0 +1,2035 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
+  public: {
+    Tables: {
+      additional_services: {
+        Row: {
+          created_at: string
+          default_price: number
+          description: Json | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: Json
+          price_type: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_price?: number
+          description?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: Json
+          price_type?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_price?: number
+          description?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: Json
+          price_type?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          reservation_id: string
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          reservation_id: string
+          title: string
+          type: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          reservation_id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notifications_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservation_availability"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_notifications_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author_name: string
+          category_id: string | null
+          content: string
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          keyword: string | null
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string
+          category_id?: string | null
+          content: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          keyword?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          category_id?: string | null
+          content?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          keyword?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      calendar_blocks: {
+        Row: {
+          car_id: string
+          created_at: string
+          created_by: string | null
+          end_datetime: string
+          id: string
+          notes: string | null
+          reason: string
+          start_datetime: string
+          updated_at: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          created_by?: string | null
+          end_datetime: string
+          id?: string
+          notes?: string | null
+          reason: string
+          start_datetime: string
+          updated_at?: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          created_by?: string | null
+          end_datetime?: string
+          id?: string
+          notes?: string | null
+          reason?: string
+          start_datetime?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_blocks_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      car_equipment: {
+        Row: {
+          car_id: string
+          created_at: string
+          equipment_id: string
+          id: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          equipment_id: string
+          id?: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          equipment_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_equipment_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "car_equipment_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      car_excluded_insurance_tiers: {
+        Row: {
+          car_id: string
+          created_at: string
+          insurance_tier_id: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          insurance_tier_id: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          insurance_tier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_excluded_insurance_tiers_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "car_excluded_insurance_tiers_insurance_tier_id_fkey"
+            columns: ["insurance_tier_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      car_pickup_locations: {
+        Row: {
+          car_id: string
+          created_at: string
+          fee: number | null
+          id: string
+          is_available: boolean | null
+          location_id: string
+          updated_at: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          fee?: number | null
+          id?: string
+          is_available?: boolean | null
+          location_id: string
+          updated_at?: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          fee?: number | null
+          id?: string
+          is_available?: boolean | null
+          location_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_pickup_locations_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "car_pickup_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "pickup_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      car_services: {
+        Row: {
+          car_id: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          price: number | null
+          price_type: string | null
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          price?: number | null
+          price_type?: string | null
+          service_id: string
+          updated_at?: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          price?: number | null
+          price_type?: string | null
+          service_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_services_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "car_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "additional_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cars: {
+        Row: {
+          body_type: string
+          brand: string
+          brand_id: string | null
+          countries: string[] | null
+          country: string
+          created_at: string
+          delivery_price_per_km: number | null
+          deposit_amount: number | null
+          description: Json | null
+          extra_km_price: number | null
+          id: string
+          images: string[]
+          is_available: boolean
+          is_featured: boolean
+          is_on_sale: boolean
+          license_plate: string | null
+          min_rental_days: Json
+          model: string
+          price_on_request: boolean
+          pricing: Json
+          slug: string
+          sort_priority: number
+          specs: Json
+          updated_at: string
+        }
+        Insert: {
+          body_type: string
+          brand: string
+          brand_id?: string | null
+          countries?: string[] | null
+          country?: string
+          created_at?: string
+          delivery_price_per_km?: number | null
+          deposit_amount?: number | null
+          description?: Json | null
+          extra_km_price?: number | null
+          id?: string
+          images?: string[]
+          is_available?: boolean
+          is_featured?: boolean
+          is_on_sale?: boolean
+          license_plate?: string | null
+          min_rental_days?: Json
+          model: string
+          price_on_request?: boolean
+          pricing?: Json
+          slug: string
+          sort_priority?: number
+          specs?: Json
+          updated_at?: string
+        }
+        Update: {
+          body_type?: string
+          brand?: string
+          brand_id?: string | null
+          countries?: string[] | null
+          country?: string
+          created_at?: string
+          delivery_price_per_km?: number | null
+          deposit_amount?: number | null
+          description?: Json | null
+          extra_km_price?: number | null
+          id?: string
+          images?: string[]
+          is_available?: boolean
+          is_featured?: boolean
+          is_on_sale?: boolean
+          license_plate?: string | null
+          min_rental_days?: Json
+          model?: string
+          price_on_request?: boolean
+          pricing?: Json
+          slug?: string
+          sort_priority?: number
+          specs?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cars_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          address_city: string | null
+          address_country: string | null
+          address_street: string | null
+          address_zip: string | null
+          billing_city: string | null
+          billing_country: string | null
+          billing_street: string | null
+          billing_zip: string | null
+          company_dic: string | null
+          company_ic_dph: string | null
+          company_ico: string | null
+          company_name: string | null
+          created_at: string
+          date_of_birth: string | null
+          driver_license_back_url: string | null
+          driver_license_front_url: string | null
+          driver_license_number: string | null
+          email: string
+          first_name: string
+          id: string
+          id_card_back_url: string | null
+          id_card_front_url: string | null
+          id_card_number: string | null
+          is_company: boolean
+          last_name: string
+          notes: string | null
+          personal_id_number: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address_city?: string | null
+          address_country?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_street?: string | null
+          billing_zip?: string | null
+          company_dic?: string | null
+          company_ic_dph?: string | null
+          company_ico?: string | null
+          company_name?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          driver_license_back_url?: string | null
+          driver_license_front_url?: string | null
+          driver_license_number?: string | null
+          email: string
+          first_name: string
+          id?: string
+          id_card_back_url?: string | null
+          id_card_front_url?: string | null
+          id_card_number?: string | null
+          is_company?: boolean
+          last_name: string
+          notes?: string | null
+          personal_id_number?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address_city?: string | null
+          address_country?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_street?: string | null
+          billing_zip?: string | null
+          company_dic?: string | null
+          company_ic_dph?: string | null
+          company_ico?: string | null
+          company_name?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          driver_license_back_url?: string | null
+          driver_license_front_url?: string | null
+          driver_license_number?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          id_card_back_url?: string | null
+          id_card_front_url?: string | null
+          id_card_number?: string | null
+          is_company?: boolean
+          last_name?: string
+          notes?: string | null
+          personal_id_number?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      delivery_discount_tiers: {
+        Row: {
+          created_at: string | null
+          days_from: number
+          days_to: number | null
+          description: Json | null
+          discount_percentage: number
+          id: string
+          name: Json
+          sort_order: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          days_from: number
+          days_to?: number | null
+          description?: Json | null
+          discount_percentage?: number
+          id?: string
+          name?: Json
+          sort_order?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          days_from?: number
+          days_to?: number | null
+          description?: Json | null
+          discount_percentage?: number
+          id?: string
+          name?: Json
+          sort_order?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      delivery_origin_addresses: {
+        Row: {
+          country_code: string
+          created_at: string | null
+          id: string
+          origin_address: string
+          origin_latitude: number
+          origin_longitude: number
+          updated_at: string | null
+        }
+        Insert: {
+          country_code: string
+          created_at?: string | null
+          id?: string
+          origin_address: string
+          origin_latitude: number
+          origin_longitude: number
+          updated_at?: string | null
+        }
+        Update: {
+          country_code?: string
+          created_at?: string | null
+          id?: string
+          origin_address?: string
+          origin_latitude?: number
+          origin_longitude?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      delivery_settings: {
+        Row: {
+          created_at: string | null
+          free_delivery_radius_km: number
+          hourly_rate_two_drivers: number
+          id: string
+          origin_address: string | null
+          origin_latitude: number | null
+          origin_longitude: number | null
+          secondary_car_rate_per_km: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          free_delivery_radius_km?: number
+          hourly_rate_two_drivers?: number
+          id?: string
+          origin_address?: string | null
+          origin_latitude?: number | null
+          origin_longitude?: number | null
+          secondary_car_rate_per_km?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          free_delivery_radius_km?: number
+          hourly_rate_two_drivers?: number
+          id?: string
+          origin_address?: string | null
+          origin_latitude?: number | null
+          origin_longitude?: number | null
+          secondary_car_rate_per_km?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      deposit_modes: {
+        Row: {
+          allowed_countries: string[] | null
+          created_at: string
+          description: Json | null
+          id: string
+          is_active: boolean | null
+          is_corporate: boolean | null
+          max_age: number | null
+          min_age: number | null
+          name: Json
+          percentage_adjustment: number | null
+          priority: number | null
+          target_country: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_countries?: string[] | null
+          created_at?: string
+          description?: Json | null
+          id?: string
+          is_active?: boolean | null
+          is_corporate?: boolean | null
+          max_age?: number | null
+          min_age?: number | null
+          name?: Json
+          percentage_adjustment?: number | null
+          priority?: number | null
+          target_country?: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_countries?: string[] | null
+          created_at?: string
+          description?: Json | null
+          id?: string
+          is_active?: boolean | null
+          is_corporate?: boolean | null
+          max_age?: number | null
+          min_age?: number | null
+          name?: Json
+          percentage_adjustment?: number | null
+          priority?: number | null
+          target_country?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      equipment: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: Json
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: Json
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: Json
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      handover_protocols: {
+        Row: {
+          access_code: string
+          access_expires_at: string
+          access_token: string
+          allowed_km: number | null
+          car_id: string | null
+          car_license_plate: string
+          car_name: string
+          car_photos: string[] | null
+          created_at: string | null
+          created_by: string | null
+          customer_driver_license_url: string | null
+          customer_email: string
+          customer_first_name: string
+          customer_id_card_back_url: string | null
+          customer_id_card_front_url: string | null
+          customer_last_name: string
+          customer_phone: string | null
+          damages: Json | null
+          deposit_amount: number | null
+          deposit_method: string | null
+          expected_return_datetime: string | null
+          extra_km_rate: number | null
+          fuel_level: string | null
+          fuel_photo_url: string | null
+          handover_protocol_id: string | null
+          id: string
+          internal_notes: string | null
+          km_exceeded: number | null
+          km_exceeded_price: number | null
+          location: string | null
+          mileage_km: number | null
+          mileage_photo_url: string | null
+          pdf_url: string | null
+          protocol_datetime: string
+          reservation_id: string | null
+          reservation_number: string | null
+          signature_landlord_url: string | null
+          signature_tenant_url: string | null
+          status: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          access_code?: string
+          access_expires_at?: string
+          access_token?: string
+          allowed_km?: number | null
+          car_id?: string | null
+          car_license_plate: string
+          car_name: string
+          car_photos?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_driver_license_url?: string | null
+          customer_email: string
+          customer_first_name: string
+          customer_id_card_back_url?: string | null
+          customer_id_card_front_url?: string | null
+          customer_last_name: string
+          customer_phone?: string | null
+          damages?: Json | null
+          deposit_amount?: number | null
+          deposit_method?: string | null
+          expected_return_datetime?: string | null
+          extra_km_rate?: number | null
+          fuel_level?: string | null
+          fuel_photo_url?: string | null
+          handover_protocol_id?: string | null
+          id?: string
+          internal_notes?: string | null
+          km_exceeded?: number | null
+          km_exceeded_price?: number | null
+          location?: string | null
+          mileage_km?: number | null
+          mileage_photo_url?: string | null
+          pdf_url?: string | null
+          protocol_datetime?: string
+          reservation_id?: string | null
+          reservation_number?: string | null
+          signature_landlord_url?: string | null
+          signature_tenant_url?: string | null
+          status?: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          access_code?: string
+          access_expires_at?: string
+          access_token?: string
+          allowed_km?: number | null
+          car_id?: string | null
+          car_license_plate?: string
+          car_name?: string
+          car_photos?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          customer_driver_license_url?: string | null
+          customer_email?: string
+          customer_first_name?: string
+          customer_id_card_back_url?: string | null
+          customer_id_card_front_url?: string | null
+          customer_last_name?: string
+          customer_phone?: string | null
+          damages?: Json | null
+          deposit_amount?: number | null
+          deposit_method?: string | null
+          expected_return_datetime?: string | null
+          extra_km_rate?: number | null
+          fuel_level?: string | null
+          fuel_photo_url?: string | null
+          handover_protocol_id?: string | null
+          id?: string
+          internal_notes?: string | null
+          km_exceeded?: number | null
+          km_exceeded_price?: number | null
+          location?: string | null
+          mileage_km?: number | null
+          mileage_photo_url?: string | null
+          pdf_url?: string | null
+          protocol_datetime?: string
+          reservation_id?: string | null
+          reservation_number?: string | null
+          signature_landlord_url?: string | null
+          signature_tenant_url?: string | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "handover_protocols_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handover_protocols_handover_protocol_id_fkey"
+            columns: ["handover_protocol_id"]
+            isOneToOne: false
+            referencedRelation: "handover_protocols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handover_protocols_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservation_availability"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handover_protocols_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_tiers: {
+        Row: {
+          benefits: Json | null
+          claim_rate_percentage: number | null
+          created_at: string
+          deductible_fixed: number | null
+          deductible_percentage: number | null
+          description: Json | null
+          display_name: Json
+          id: string
+          is_active: boolean | null
+          name: string
+          price_percentage: number | null
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          benefits?: Json | null
+          claim_rate_percentage?: number | null
+          created_at?: string
+          deductible_fixed?: number | null
+          deductible_percentage?: number | null
+          description?: Json | null
+          display_name?: Json
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price_percentage?: number | null
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          benefits?: Json | null
+          claim_rate_percentage?: number | null
+          created_at?: string
+          deductible_fixed?: number | null
+          deductible_percentage?: number | null
+          description?: Json | null
+          display_name?: Json
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price_percentage?: number | null
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pickup_locations: {
+        Row: {
+          address: string | null
+          city: string | null
+          country: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          country: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pricing_tiers: {
+        Row: {
+          car_id: string
+          created_at: string
+          days_from: number
+          days_to: number | null
+          id: string
+          is_promotional: boolean | null
+          km_per_day: number
+          price_per_day: number
+          promotional_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          days_from: number
+          days_to?: number | null
+          id?: string
+          is_promotional?: boolean | null
+          km_per_day: number
+          price_per_day: number
+          promotional_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          days_from?: number
+          days_to?: number | null
+          id?: string
+          is_promotional?: boolean | null
+          km_per_day?: number
+          price_per_day?: number
+          promotional_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_tiers_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address_city: string | null
+          address_country: string | null
+          address_street: string | null
+          address_zip: string | null
+          avatar_url: string | null
+          created_at: string
+          date_of_birth: string | null
+          driver_license_number: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          id_card_number: string | null
+          is_admin: boolean
+          last_name: string | null
+          personal_id_number: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_city?: string | null
+          address_country?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          driver_license_number?: string | null
+          email?: string | null
+          first_name?: string | null
+          id: string
+          id_card_number?: string | null
+          is_admin?: boolean
+          last_name?: string | null
+          personal_id_number?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_city?: string | null
+          address_country?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          driver_license_number?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          id_card_number?: string | null
+          is_admin?: boolean
+          last_name?: string | null
+          personal_id_number?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      promo_code_cars: {
+        Row: {
+          car_id: string
+          created_at: string
+          id: string
+          promo_code_id: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string
+          id?: string
+          promo_code_id: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string
+          id?: string
+          promo_code_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_code_cars_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promo_code_cars_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promo_codes: {
+        Row: {
+          assigned_email: string | null
+          assigned_user_id: string | null
+          code: string
+          created_at: string
+          current_uses: number | null
+          discount_amount: number | null
+          discount_percentage: number | null
+          discount_type: string
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          updated_at: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          assigned_email?: string | null
+          assigned_user_id?: string | null
+          code: string
+          created_at?: string
+          current_uses?: number | null
+          discount_amount?: number | null
+          discount_percentage?: number | null
+          discount_type?: string
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          assigned_email?: string | null
+          assigned_user_id?: string | null
+          code?: string
+          created_at?: string
+          current_uses?: number | null
+          discount_amount?: number | null
+          discount_percentage?: number | null
+          discount_type?: string
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: []
+      }
+      protocol_user_settings: {
+        Row: {
+          created_at: string
+          signature_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          signature_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          signature_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reservation_amendments: {
+        Row: {
+          amendment_number: number
+          amendment_url: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          new_base_price: number
+          new_dropoff_datetime: string
+          new_km_per_day: number | null
+          new_price_per_day: number
+          new_total_days: number
+          new_total_km: number | null
+          notes: string | null
+          previous_base_price: number
+          previous_dropoff_datetime: string
+          previous_km_per_day: number | null
+          previous_price_per_day: number
+          previous_total_days: number
+          previous_total_km: number | null
+          price_difference: number
+          reason: string | null
+          reservation_id: string
+          tier_change_message: string | null
+          tier_changed: boolean | null
+        }
+        Insert: {
+          amendment_number: number
+          amendment_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_base_price: number
+          new_dropoff_datetime: string
+          new_km_per_day?: number | null
+          new_price_per_day: number
+          new_total_days: number
+          new_total_km?: number | null
+          notes?: string | null
+          previous_base_price: number
+          previous_dropoff_datetime: string
+          previous_km_per_day?: number | null
+          previous_price_per_day: number
+          previous_total_days: number
+          previous_total_km?: number | null
+          price_difference: number
+          reason?: string | null
+          reservation_id: string
+          tier_change_message?: string | null
+          tier_changed?: boolean | null
+        }
+        Update: {
+          amendment_number?: number
+          amendment_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_base_price?: number
+          new_dropoff_datetime?: string
+          new_km_per_day?: number | null
+          new_price_per_day?: number
+          new_total_days?: number
+          new_total_km?: number | null
+          notes?: string | null
+          previous_base_price?: number
+          previous_dropoff_datetime?: string
+          previous_km_per_day?: number | null
+          previous_price_per_day?: number
+          previous_total_days?: number
+          previous_total_km?: number | null
+          price_difference?: number
+          reason?: string | null
+          reservation_id?: string
+          tier_change_message?: string | null
+          tier_changed?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservation_amendments_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservation_availability"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservation_amendments_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservation_services: {
+        Row: {
+          created_at: string
+          id: string
+          price: number
+          price_type: string
+          quantity: number | null
+          reservation_id: string
+          service_id: string
+          service_name: string
+          total_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price: number
+          price_type: string
+          quantity?: number | null
+          reservation_id: string
+          service_id: string
+          service_name: string
+          total_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price?: number
+          price_type?: string
+          quantity?: number | null
+          reservation_id?: string
+          service_id?: string
+          service_name?: string
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservation_services_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservation_availability"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservation_services_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservation_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "additional_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservations: {
+        Row: {
+          access_token: string
+          admin_notes: string | null
+          amendment_count: number | null
+          base_price: number
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          car_id: string
+          confirmation_email_sent: boolean | null
+          confirmed_at: string | null
+          contract_url: string | null
+          created_at: string
+          customer_id: string
+          delivery_address_dropoff: string | null
+          delivery_address_pickup: string | null
+          delivery_distance_dropoff: number | null
+          delivery_distance_pickup: number | null
+          delivery_latitude_dropoff: number | null
+          delivery_latitude_pickup: number | null
+          delivery_longitude_dropoff: number | null
+          delivery_longitude_pickup: number | null
+          delivery_price: number | null
+          deposit_amount: number | null
+          deposit_mode_id: string | null
+          discount_amount: number | null
+          discount_name: string | null
+          discount_percentage: number | null
+          discount_type: string | null
+          dropoff_datetime: string
+          dropoff_location_id: string | null
+          extension_price_difference: number | null
+          extension_request_status: string | null
+          extension_requested_at: string | null
+          extra_km_price: number | null
+          fees_price: number | null
+          id: string
+          insurance_price: number | null
+          insurance_tier_id: string | null
+          is_delivery_dropoff: boolean | null
+          is_delivery_pickup: boolean | null
+          km_per_day: number | null
+          last_amended_at: string | null
+          original_dropoff_datetime: string | null
+          original_price: number | null
+          paid_at: string | null
+          payment_amount_in_currency: number | null
+          payment_currency: string | null
+          payment_exchange_rate: number | null
+          payment_method: string | null
+          pickup_datetime: string
+          pickup_location_id: string | null
+          promo_code_id: string | null
+          requested_dropoff_datetime: string | null
+          reservation_number: string
+          services_price: number | null
+          source_locale: string | null
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_payment_status: string | null
+          total_allowed_km: number | null
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          access_token?: string
+          admin_notes?: string | null
+          amendment_count?: number | null
+          base_price?: number
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          car_id: string
+          confirmation_email_sent?: boolean | null
+          confirmed_at?: string | null
+          contract_url?: string | null
+          created_at?: string
+          customer_id: string
+          delivery_address_dropoff?: string | null
+          delivery_address_pickup?: string | null
+          delivery_distance_dropoff?: number | null
+          delivery_distance_pickup?: number | null
+          delivery_latitude_dropoff?: number | null
+          delivery_latitude_pickup?: number | null
+          delivery_longitude_dropoff?: number | null
+          delivery_longitude_pickup?: number | null
+          delivery_price?: number | null
+          deposit_amount?: number | null
+          deposit_mode_id?: string | null
+          discount_amount?: number | null
+          discount_name?: string | null
+          discount_percentage?: number | null
+          discount_type?: string | null
+          dropoff_datetime: string
+          dropoff_location_id?: string | null
+          extension_price_difference?: number | null
+          extension_request_status?: string | null
+          extension_requested_at?: string | null
+          extra_km_price?: number | null
+          fees_price?: number | null
+          id?: string
+          insurance_price?: number | null
+          insurance_tier_id?: string | null
+          is_delivery_dropoff?: boolean | null
+          is_delivery_pickup?: boolean | null
+          km_per_day?: number | null
+          last_amended_at?: string | null
+          original_dropoff_datetime?: string | null
+          original_price?: number | null
+          paid_at?: string | null
+          payment_amount_in_currency?: number | null
+          payment_currency?: string | null
+          payment_exchange_rate?: number | null
+          payment_method?: string | null
+          pickup_datetime: string
+          pickup_location_id?: string | null
+          promo_code_id?: string | null
+          requested_dropoff_datetime?: string | null
+          reservation_number: string
+          services_price?: number | null
+          source_locale?: string | null
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_payment_status?: string | null
+          total_allowed_km?: number | null
+          total_price?: number
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          admin_notes?: string | null
+          amendment_count?: number | null
+          base_price?: number
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          car_id?: string
+          confirmation_email_sent?: boolean | null
+          confirmed_at?: string | null
+          contract_url?: string | null
+          created_at?: string
+          customer_id?: string
+          delivery_address_dropoff?: string | null
+          delivery_address_pickup?: string | null
+          delivery_distance_dropoff?: number | null
+          delivery_distance_pickup?: number | null
+          delivery_latitude_dropoff?: number | null
+          delivery_latitude_pickup?: number | null
+          delivery_longitude_dropoff?: number | null
+          delivery_longitude_pickup?: number | null
+          delivery_price?: number | null
+          deposit_amount?: number | null
+          deposit_mode_id?: string | null
+          discount_amount?: number | null
+          discount_name?: string | null
+          discount_percentage?: number | null
+          discount_type?: string | null
+          dropoff_datetime?: string
+          dropoff_location_id?: string | null
+          extension_price_difference?: number | null
+          extension_request_status?: string | null
+          extension_requested_at?: string | null
+          extra_km_price?: number | null
+          fees_price?: number | null
+          id?: string
+          insurance_price?: number | null
+          insurance_tier_id?: string | null
+          is_delivery_dropoff?: boolean | null
+          is_delivery_pickup?: boolean | null
+          km_per_day?: number | null
+          last_amended_at?: string | null
+          original_dropoff_datetime?: string | null
+          original_price?: number | null
+          paid_at?: string | null
+          payment_amount_in_currency?: number | null
+          payment_currency?: string | null
+          payment_exchange_rate?: number | null
+          payment_method?: string | null
+          pickup_datetime?: string
+          pickup_location_id?: string | null
+          promo_code_id?: string | null
+          requested_dropoff_datetime?: string | null
+          reservation_number?: string
+          services_price?: number | null
+          source_locale?: string | null
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_payment_status?: string | null
+          total_allowed_km?: number | null
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_deposit_mode_id_fkey"
+            columns: ["deposit_mode_id"]
+            isOneToOne: false
+            referencedRelation: "deposit_modes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_dropoff_location_id_fkey"
+            columns: ["dropoff_location_id"]
+            isOneToOne: false
+            referencedRelation: "pickup_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_insurance_tier_id_fkey"
+            columns: ["insurance_tier_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_pickup_location_id_fkey"
+            columns: ["pickup_location_id"]
+            isOneToOne: false
+            referencedRelation: "pickup_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          car_id: string | null
+          car_image: string | null
+          car_name: string
+          created_at: string
+          customer_name: string
+          display_order: number
+          id: string
+          is_visible: boolean
+          quote: Json
+          rating: number
+          rental_date_from: string | null
+          rental_date_to: string | null
+          updated_at: string
+        }
+        Insert: {
+          car_id?: string | null
+          car_image?: string | null
+          car_name: string
+          created_at?: string
+          customer_name: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean
+          quote?: Json
+          rating?: number
+          rental_date_from?: string | null
+          rental_date_to?: string | null
+          updated_at?: string
+        }
+        Update: {
+          car_id?: string | null
+          car_image?: string | null
+          car_name?: string
+          created_at?: string
+          customer_name?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean
+          quote?: Json
+          rating?: number
+          rental_date_from?: string | null
+          rental_date_to?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "testimonials_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      reservation_availability: {
+        Row: {
+          car_id: string | null
+          created_at: string | null
+          dropoff_datetime: string | null
+          id: string | null
+          pickup_datetime: string | null
+          status: string | null
+        }
+        Insert: {
+          car_id?: string | null
+          created_at?: string | null
+          dropoff_datetime?: string | null
+          id?: string | null
+          pickup_datetime?: string | null
+          status?: string | null
+        }
+        Update: {
+          car_id?: string | null
+          created_at?: string | null
+          dropoff_datetime?: string | null
+          id?: string | null
+          pickup_datetime?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Functions: {
+      check_car_availability: {
+        Args: {
+          p_car_id: string
+          p_end_datetime: string
+          p_exclude_reservation_id?: string
+          p_start_datetime: string
+        }
+        Returns: boolean
+      }
+      check_car_availability_any_slot: {
+        Args: {
+          p_car_id: string
+          p_dropoff_date: string
+          p_pickup_date: string
+        }
+        Returns: boolean
+      }
+      create_customer: {
+        Args: {
+          p_email: string
+          p_first_name: string
+          p_last_name: string
+          p_phone?: string
+          p_user_id?: string
+        }
+        Returns: string
+      }
+      find_customer_id_by_email: { Args: { p_email: string }; Returns: string }
+      get_cars_with_recommendation_score: {
+        Args: { p_country?: string }
+        Returns: {
+          body_type: string
+          brand: string
+          brand_id: string
+          countries: string[]
+          country: string
+          created_at: string
+          delivery_price_per_km: number
+          deposit_amount: number
+          description: Json
+          extra_km_price: number
+          id: string
+          images: string[]
+          is_available: boolean
+          is_featured: boolean
+          is_on_sale: boolean
+          license_plate: string
+          model: string
+          price_on_request: boolean
+          pricing: Json
+          recommendation_score: number
+          slug: string
+          sort_priority: number
+          specs: Json
+          updated_at: string
+        }[]
+      }
+      get_promo_code_reservations: {
+        Args: { p_promo_code_id: string }
+        Returns: {
+          car_name: string
+          created_at: string
+          discount_amount: number
+          dropoff_datetime: string
+          pickup_datetime: string
+          reservation_number: string
+          status: string
+          total_price: number
+        }[]
+      }
+      resolve_user_id_by_email: { Args: { p_email: string }; Returns: string }
+      update_customer_details: {
+        Args: {
+          p_address_city?: string
+          p_address_country?: string
+          p_address_street?: string
+          p_address_zip?: string
+          p_customer_id: string
+          p_date_of_birth?: string
+          p_driver_license_back_url?: string
+          p_driver_license_front_url?: string
+          p_driver_license_number?: string
+          p_id_card_back_url?: string
+          p_id_card_front_url?: string
+          p_id_card_number?: string
+          p_personal_id_number?: string
+          p_phone?: string
+        }
+        Returns: boolean
+      }
+      upsert_checkout_customer: {
+        Args: {
+          p_address_city?: string
+          p_address_country?: string
+          p_address_street?: string
+          p_address_zip?: string
+          p_billing_city?: string
+          p_billing_country?: string
+          p_billing_street?: string
+          p_billing_zip?: string
+          p_company_dic?: string
+          p_company_ic_dph?: string
+          p_company_ico?: string
+          p_company_name?: string
+          p_date_of_birth?: string
+          p_driver_license_back_url?: string
+          p_driver_license_front_url?: string
+          p_driver_license_number?: string
+          p_email: string
+          p_first_name: string
+          p_id_card_back_url?: string
+          p_id_card_front_url?: string
+          p_id_card_number?: string
+          p_is_company?: boolean
+          p_last_name: string
+          p_personal_id_number?: string
+          p_phone?: string
+          p_user_id?: string
+        }
+        Returns: string
+      }
+      validate_promo_code: {
+        Args: { p_car_id?: string; p_code: string }
+        Returns: {
+          discount_amount: number
+          discount_percentage: number
+          discount_type: string
+          error_message: string
+          is_valid: boolean
+          promo_code_id: string
+        }[]
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
