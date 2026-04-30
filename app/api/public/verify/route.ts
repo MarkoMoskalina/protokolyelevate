@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getVerifyRateLimit } from "@/lib/rate-limit";
 import {
   buildAccessCookieValue,
   codesMatch,
@@ -17,14 +18,11 @@ export const runtime = "nodejs";
  * Body: { token: string (64-hex), code: string (6 digits) }
  *
  * Behaviour:
+ *   - Rate-limited to 5 attempts per 15 minutes per IP (Upstash sliding window).
  *   - Always returns identical { error } body for any failure to avoid
  *     leaking which check failed (token vs code vs expiry).
  *   - On success: sets an HTTP-only signed cookie scoped to this token and
  *     returns { ok: true }. Client then navigates to /zobrazenie/<token>.
- *
- * NOTE: rate limiting is intentionally not implemented yet — that's a later
- * deliverable. With 256-bit tokens guessing the URL is intractable, but the
- * 6-digit code can still be brute forced from a known token (1M tries).
  */
 export async function POST(request: Request) {
   const genericError = NextResponse.json(
@@ -33,6 +31,27 @@ export async function POST(request: Request) {
   );
 
   try {
+    // --- Rate limiting (fail-open if Redis is unavailable) ---
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "unknown";
+
+    const rateLimit = getVerifyRateLimit();
+    if (rateLimit) {
+      try {
+        const { success } = await rateLimit.limit(ip);
+        if (!success) {
+          return NextResponse.json(
+            { error: "Príliš veľa pokusov. Skúste to znova o 15 minút." },
+            { status: 429 },
+          );
+        }
+      } catch {
+        // Redis unavailable — allow request through (fail-open)
+      }
+    }
+
     const body = await request.json().catch(() => ({}));
     const token = String(body.token || "").trim().toLowerCase();
     const code = String(body.code || "").trim();
